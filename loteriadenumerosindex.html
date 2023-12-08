@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Lotería</title>
+    <!-- Importa las fuentes personalizadas desde Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Lobster&family=Dancing+Script&family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #3498db;
+            padding: 20px;
+            color: white;
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            margin: 0;
+        }
+
+        #welcome-message {
+            font-family: 'Lobster', cursive;
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
+
+        /* Estilos para la ventana modal */
+        #modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        #modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Estilos para el botón "Empezar" en la ventana modal */
+        #start-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Estilos para el botón "Empezar" en el juego */
+        #draw-button {
+            margin-top: 20px;
+            font-size: 1.2em;
+            cursor: pointer;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Agrega sombra al texto */
+        }
+
+        /* Otros estilos para el juego aquí */
+        
+        #lottery-ticket {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #winning-numbers-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .winning-number-box {
+            width: 30px;
+            height: 30px;
+            background-color: #eee;
+            border: 1px solid #ccc;
+            display: inline-block;
+            margin: 0 5px;
+            font-size: 1.2em;
+            line-height: 30px;
+            border-radius: 5px;
+        }
+
+        #choose-numbers-text {
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+
+        .number-selector {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: #3498db;
+            color: white;
+            border: 1px solid #ccc;
+            margin: 0 5px;
+            font-size: 1.2em;
+            line-height: 30px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #selected-numbers-preview {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        #results-container {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        #participation-message {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        #play-again {
+            font-family: 'Great Vibes', cursive;
+            font-size: 1.2em;
+            cursor: pointer;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Juego de Lotería</h1>
+        <div id="welcome-message">¡Bienvenido! Participa y disfruta de la emoción de ganar.</div>
+    </header>
+
+    <!-- Ventana modal de inicio -->
+    <div id="modal-overlay">
+        <div id="modal-content">
+            <h2>Acierta los 5 dígitos y gana $1000</h2>
+            <button id="start-button">Empezar</button>
+        </div>
+    </div>
+
+    <div id="lottery-ticket">
+        <div id="winning-numbers-title">Números Ganadores</div>
+        <div>
+            <div class="winning-number-box">*</div>
+            <div class="winning-number-box">*</div>
+            <div class="winning-number-box">*</div>
+            <div class="winning-number-box">*</div>
+            <div class="winning-number-box">*</div>
+        </div>
+
+        <div id="choose-numbers-text">Escoge tus Números Ganadores</div>
+        <div>
+            <div class="number-selector" onclick="selectNumber(0)">0</div>
+            <div class="number-selector" onclick="selectNumber(1)">1</div>
+            <div class="number-selector" onclick="selectNumber(2)">2</div>
+            <div class="number-selector" onclick="selectNumber(3)">3</div>
+            <div class="number-selector" onclick="selectNumber(4)">4</div>
+            <div class="number-selector" onclick="selectNumber(5)">5</div>
+            <div class="number-selector" onclick="selectNumber(6)">6</div>
+            <div class="number-selector" onclick="selectNumber(7)">7</div>
+            <div class="number-selector" onclick="selectNumber(8)">8</div>
+            <div class="number-selector" onclick="selectNumber(9)">9</div>
+        </div>
+
+        <div id="selected-numbers-preview"></div>
+
+        <button id="draw-button" onclick="simulateDraw()">Sortear</button>
+    </div>
+
+    <!-- Ventana de resultados -->
+    <div id="results-container">
+        <div id="participation-message">¡Gracias por participar! ¡Buena suerte la próxima vez!</div>
+        <div id="play-again" onclick="resetGame()">Jugar de Nuevo</div>
+    </div>
+
+    <script>
+        let selectedNumbers = [];
+
+        function selectNumber(number) {
+            if (selectedNumbers.length < 5 && !selectedNumbers.includes(number)) {
+                selectedNumbers.push(number);
+                updateSelectedNumbersPreview();
+            }
+        }
+
+        function updateSelectedNumbersPreview() {
+            document.getElementById('selected-numbers-preview').innerHTML = `Números seleccionados: ${selectedNumbers.join(' ')}`;
+        }
+
+        function simulateDraw() {
+            // Lógica de sorteo simulado
+            // Simplemente asigna números diferentes a los seleccionados por el usuario
+            const simulatedWinningNumbers = generateRandomNumbers(5, 10);
+
+            // Muestra los resultados
+            document.getElementById('results-container').style.display = 'block';
+            document.getElementById('winning-numbers-title').innerHTML = 'Números Ganadores';
+            for (let i = 0; i < simulatedWinningNumbers.length; i++) {
+                document.getElementsByClassName('winning-number-box')[i].innerHTML = simulatedWinningNumbers[i];
+            }
+            document.getElementById('draw-button').style.display = 'none';
+        }
+
+        function generateRandomNumbers(count, max) {
+            const numbers = [];
+            while (numbers.length < count) {
+                const randomNumber = Math.floor(Math.random() * max);
+                if (!numbers.includes(randomNumber)) {
+                    numbers.push(randomNumber);
+                }
+            }
+            return numbers;
+        }
+
+        function resetGame() {
+            // Lógica para reiniciar el juego
+            // ...
+
+            // Oculta los resultados y permite una nueva participación
+            document.getElementById('results-container').style.display = 'none';
+            document.getElementById('winning-numbers-title').innerHTML = 'Números Ganadores';
+            for (let i = 0; i < 5; i++) {
+                document.getElementsByClassName('winning-number-box')[i].innerHTML = '*';
+            }
+            document.getElementById('draw-button').style.display = 'block';
+            selectedNumbers = [];
+            updateSelectedNumbersPreview();
+        }
+
+        // Muestra la ventana modal al cargar la página
+        window.onload = function() {
+            document.getElementById('modal-overlay').style.display = 'block';
+        };
+
+        // Cierra la ventana modal y comienza el juego al hacer clic en "Empezar"
+        document.getElementById('start-button').addEventListener('click', function() {
+            document.getElementById('modal-overlay').style.display = 'none';
+        });
+    </script>
+</body>
+</html>

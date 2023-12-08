@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Botones</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000; /* Fondo negro profundo */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .button-container {
+            text-align: center;
+        }
+
+        .button {
+            margin: 10px;
+            padding: 15px 30px;
+            font-size: 20px;
+            text-transform: uppercase;
+            background-color: white; /* Fondo blanco de los botones */
+            color: black; /* Letras negras */
+            border: none;
+            border-radius: 30px; /* Bordes redondos */
+            cursor: pointer;
+            font-family: 'Pacifico', cursive;
+            animation: pulse 2s infinite;
+            transition: background-color 0.3s ease;
+            display: block;
+            width: 200px; /* Tamaño fijo para los botones */
+        }
+
+        .button:hover {
+            background-color: #f0f0f0; /* Cambia de color al pasar el cursor */
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <button class="button" onclick="window.location.href='cashindex.html'">CASH</button>
+        <button class="button" onclick="window.location.href='memoriaindex.html'">MEMORY</button>
+        <button class="button" onclick="window.location.href='raspayganaindex.html'">RASPA</button>
+        <button class="button" onclick="window.location.href='loteriadenumerosindex.html'">LOTTERY</button>
+    </div>
+</body>
+</html>

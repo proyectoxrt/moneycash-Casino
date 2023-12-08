@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Memoria</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 10cm 0 7cm 0; /* 10cm en la parte superior, 7cm en la parte inferior y 0 en los lados */
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #gameBoard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .card {
+            width: 80px;
+            height: 80px;
+            background-color: #61dafb;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .card:hover {
+            background-color: #1976d2;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card .symbol {
+            transform: rotateY(180deg);
+        }
+
+        #message {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* Estilos para el contador */
+        #scoreContainer {
+            margin-top: auto; /* Empuja el contador hacia la parte inferior */
+            text-align: center;
+            margin-bottom: 20px; /* Espacio en la parte inferior */
+        }
+
+        #scoreDisplay {
+            font-size: 24px;
+            color: #333; /* Cambia el color del contador */
+        }
+    </style>
+</head>
+<body>
+    <div id="gameBoard"></div>
+    <p id="message"></p>
+
+    <!-- Contenedor del contador -->
+    <div id="scoreContainer">
+        <p id="scoreDisplay">$0.000</p>
+    </div>
+
+    <script>
+        let symbols = [];
+        let cards = [];
+        let flippedCards = [];
+        let matchedCards = [];
+        let score = parseFloat(localStorage.getItem('score')) || 0;
+        let firstFlippedCard = null;
+
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+
+            return array;
+        }
+
+        function generateAlphabet() {
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            const reversedAlphabet = alphabet.reverse();
+            symbols = reversedAlphabet.concat(reversedAlphabet);
+            cards = shuffle(symbols);
+        }
+
+        function initGame() {
+            generateAlphabet();
+            const gameBoard = document.getElementById('gameBoard');
+            gameBoard.innerHTML = '';
+
+            for (let i = 0; i < cards.length; i++) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.index = i;
+                card.innerHTML = '<span class="symbol">?</span>';
+                card.addEventListener('click', flipCard);
+                gameBoard.appendChild(card);
+            }
+            
+            updateScoreDisplay(); // Actualiza el contador al iniciar el juego
+        }
+
+        function flipCard() {
+            const selectedCard = this;
+            const index = selectedCard.dataset.index;
+
+            if (flippedCards.length === 1 && flippedCards[0] === index) {
+                return;
+            }
+
+            selectedCard.classList.add('flipped');
+            flippedCards.push(index);
+            selectedCard.innerHTML = `<span class="symbol">${cards[index]}</span>`;
+
+            if (flippedCards.length === 2) {
+                if (cards[flippedCards[0]] === cards[flippedCards[1]]) {
+                    // Si las cartas son iguales, aumenta el puntaje
+                    score += 0.005;
+                    updateScoreDisplay();
+                    localStorage.setItem('score', score);
+                    matchedCards.push(flippedCards[0], flippedCards[1]);
+                    if (matchedCards.length === cards.length) {
+                        document.getElementById('message').innerHTML = '¡Felicidades! Has encontrado todos los pares.';
+                        setTimeout(resetGame, 1000);
+                    }
+                } else {
+                    // Si las cartas no son iguales, voltea las cartas nuevamente después de un breve período
+                    setTimeout(() => {
+                        document.querySelectorAll('.card').forEach(card => {
+                            const cardIndex = card.dataset.index;
+                            if (!matchedCards.includes(cardIndex)) {
+                                card.classList.remove('flipped');
+                                card.innerHTML = '<span class="symbol">?</span>';
+                            }
+                        });
+                    }, 500);
+                }
+                flippedCards = [];
+            }
+        }
+
+        function resetGame() {
+            matchedCards = [];
+            document.getElementById('message').innerHTML = '';
+            cards = shuffle(cards);
+            initGame();
+        }
+
+        // Función para actualizar el contador de puntaje en pantalla
+        function updateScoreDisplay() {
+            const scoreElem = document.getElementById('scoreDisplay');
+            scoreElem.textContent = `$${score.toFixed(3)}`;
+        }
+
+        window.onload = initGame;
+    </script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-color: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #scoreContainer {
+            text-align: center;
+        }
+
+        #clickButton {
+            background-color: white;
+            color: black;
+            border: none;
+            border-radius: 50%;
+            padding: 20px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #clickButton:hover {
+            background-color: #45a049;
+        }
+
+        #scoreDisplay {
+            font-size: 24px;
+            color: white;
+        }
+
+        #redeemButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        /* Estilos para la ventana emergente */
+        #redeemModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="scoreContainer">
+        <button id="clickButton"><i class="fas fa-dollar-sign"></i></button>
+        <p id="scoreDisplay">$0.000</p>
+        <button id="redeemButton">Canjear puntos</button>
+    </div>
+
+    <!-- Ventana emergente de canje de puntos -->
+    <div id="redeemModal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModal">×</span>
+            <p id="pointsNeededMessage"></p>
+        </div>
+    </div>
+
+    <script>
+        const scoreElem = document.getElementById('scoreDisplay');
+        const clickButton = document.getElementById('clickButton');
+        const redeemButton = document.getElementById('redeemButton');
+        const redeemModal = document.getElementById('redeemModal');
+        const closeModal = document.getElementById('closeModal');
+        const pointsNeededMessage = document.getElementById('pointsNeededMessage');
+        let score = parseFloat(localStorage.getItem('score')) || 0;
+        scoreElem.textContent = `$${score.toFixed(3)}`;
+
+        clickButton.addEventListener('click', () => {
+            score += 0.001;
+            scoreElem.textContent = `$${score.toFixed(3)}`;
+            localStorage.setItem('score', score);
+        });
+
+        redeemButton.addEventListener('click', () => {
+            if (score >= 50) {
+                window.location.href = "https://wa.link/alhgu9";
+            } else {
+                const pointsNeeded = (50 - score).toFixed(3);
+                pointsNeededMessage.textContent = `Te faltan ${pointsNeeded} puntos para canjear.`;
+                redeemModal.style.display = 'block';
+            }
+        });
+
+        closeModal.addEventListener('click', () => {
+            redeemModal.style.display = 'none';
+        });
+
+        // Cerrar la ventana emergente si se hace clic fuera de ella
+        window.addEventListener('click', (event) => {
+            if (event.target === redeemModal) {
+                redeemModal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

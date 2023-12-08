@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspa y Gana</title>
+    <style>
+        /* Estilos para el contenedor principal */
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #e6e6fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Estilos para el área del raspa y gana */
+        .scratch-card {
+            width: 200px;
+            height: 100px;
+            position: relative;
+            cursor: pointer;
+            border: 4px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        /* Estilos para la capa de rascado */
+        .overlay {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(60deg, #32a852, #32a1a8);
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: scaleX(1);
+            transform-origin: left;
+            transition: transform 0.7s ease;
+        }
+
+        /* Estilos para el mensaje */
+        .message {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 15px;
+        }
+
+        /* Estilos para el símbolo de dólar */
+        .dollar-sign {
+            display: none;
+            font-size: 48px;
+            color: #ffd700;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Estilos para la visualización del puntaje */
+        .score-display {
+            text-align: center;
+            font-size: 24px;
+            color: #444;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="scratch-card" id="scratch-card-1">
+        <div class="overlay"></div>
+        <div class="dollar-sign">💲</div>
+    </div>
+    <p class="message" id="message-1"></p>
+
+    <div class="scratch-card" id="scratch-card-2">
+        <div class="overlay"></div>
+        <div class="dollar-sign">💲</div>
+    </div>
+    <p class="message" id="message-2"></p>
+
+    <div class="scratch-card" id="scratch-card-3">
+        <div class="overlay"></div>
+        <div class="dollar-sign">💲</div>
+    </div>
+    <p class="message" id="message-3"></p>
+
+    <!-- Div para mostrar el puntaje -->
+    <div class="score-display" id="scoreDisplay">$0.000</div>
+
+    <script>
+        const scratchCards = document.querySelectorAll('.scratch-card');
+        const overlays = document.querySelectorAll('.overlay');
+        const messages = document.querySelectorAll('.message');
+        const dollarSigns = document.querySelectorAll('.dollar-sign');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+
+        let isScratching = [false, false, false];
+        let winnerIndex = Math.floor(Math.random() * 3);
+        let revealed = false;
+        let score = parseFloat(localStorage.getItem('score')) || 0;
+        scoreDisplay.textContent = `$${score.toFixed(3)}`;
+
+        scratchCards.forEach((scratchCard, index) => {
+            scratchCard.addEventListener('mousedown', () => {
+                if (revealed || isScratching[index]) return;
+                isScratching[index] = true;
+
+                const revealThreshold = 20;
+                const reveal = () => {
+                    overlays[index].style.transform = 'scaleX(0)';
+                    if (index === winnerIndex) {
+                        dollarSigns[index].style.display = 'block';
+                        score += 0.050;
+                        scoreDisplay.textContent = `$${score.toFixed(3)}`;
+                        localStorage.setItem('score', score);
+                    } else {
+                        messages[index].textContent = '';
+                        dollarSigns[winnerIndex].style.display = 'block';
+                    }
+                    isScratching[index] = false;
+                    revealed = true;
+
+                    scratchCards.forEach((card, i) => {
+                        if (i !== index) {
+                            overlays[i].style.transform = 'scaleX(0)';
+                            messages[i].textContent = '';
+                        }
+                    });
+                };
+                setTimeout(reveal, revealThreshold);
+            });
+        });
+    </script>
+</body>
+</html>
